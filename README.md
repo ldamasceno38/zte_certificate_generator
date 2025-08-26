@@ -23,7 +23,7 @@ The script will prompt you for:
 
 You can then input in ZTE Telnet (Example)
 ```bash
-setmac 1 2561 U2vuqy4iIHRMZSywMc/7VrBanhx93YStMMsqDA0+ngGDmM7Rsvqkay22EWFT7qXsplEtE5MyZm6ZxXX55ss/rL86LPWUd/tTiM584+Sy5N0vyl1T8hkohT7qNPln3+PklAzpF0PSqeZcE40t45fQwSlJojnNmNewndhBJyWgzp8=
+setmac 1 2561 eTjZWYYpqLkTAeX6ME7zSrlwZTYJp9ddse1YTB65IhGGbTOygyowi3A7831ooaeJS59ygmMPCCV40GFAYINiQiDzXymJXUnVD79vE/pHeBhm8zhs6APnEoAzYoR9NlpZKTEnH88vVGlm/mVbQ6ugHgq8gp6pELtJ9oWZGo26U5s=
 upgradetest devicecheck
 ```
 If upgradetest results in SUCCESS you're good to go.
