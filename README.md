@@ -1,6 +1,6 @@
 # Anti-Infringement Certificate Generator
 
-A Python script that generates RSA-encrypted certificates for hardware validation using MAC addresses and board types.
+A Python script that generates RSA-encrypted Certificate ID 2561 for hardware validation using MAC addresses and board types.
 
 ## Requirements
 
