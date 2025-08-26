@@ -1,5 +1,6 @@
 # Anti-Infringement Certificate [ID 2561] Generator
 
+For Fixing ZTE modem 10 minute reboot 
 A Python script that generates RSA-encrypted Certificate ID 2561 for hardware validation using MAC addresses and board types.
 
 ## Requirements
