@@ -17,8 +17,8 @@ python zte_certificate_generator.py
 ```
 
 The script will prompt you for:
-- **MAC Address 1**: First device MAC address (e.g., `48:96:D9:A2:47:01`)
-- **MAC Address 2**: Second device MAC address (e.g., `48:96:D9:A2:47:02`) 
+- **MAC Address 1**: MAC Address Number 1 (setmac show2 -> ID 256) (e.g., `48:96:D9:A2:47:01`)
+- **MAC Address 2**: MAC Address Number 2 (setmac show2 -> ID 257) (e.g., `48:96:D9:A2:47:02`) 
 - **Board Type**: Hardware board identifier (e.g., `F6600P`)
 
 You can then input in ZTE Telnet (Example)
