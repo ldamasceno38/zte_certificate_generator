@@ -25,5 +25,6 @@ You can then input in ZTE Telnet (Example)
 ```bash
 setmac 1 2561 eTjZWYYpqLkTAeX6ME7zSrlwZTYJp9ddse1YTB65IhGGbTOygyowi3A7831ooaeJS59ygmMPCCV40GFAYINiQiDzXymJXUnVD79vE/pHeBhm8zhs6APnEoAzYoR9NlpZKTEnH88vVGlm/mVbQ6ugHgq8gp6pELtJ9oWZGo26U5s=
 upgradetest devicecheck
+reboot
 ```
 If upgradetest results in SUCCESS you're good to go.
