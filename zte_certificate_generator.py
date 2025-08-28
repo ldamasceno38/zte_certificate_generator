@@ -1,3 +1,18 @@
+# My gift to the community.
+#
+# https://github.com/ldamasceno38/zte_certificate_generator
+#
+# Generates Certificate ID 2561 for Fixing 10-minute-reboot after Anti_Infringement_judge function is triggered.
+#
+# Anti_Infringement_judge() if the certificate (base64) after RSA decryption CONTAINS:
+#  - MAC 1 (setmac show id 256)
+#  - MAC 2 (setmac show id 257)
+#  - BoardType (not setmac, this is checked via DB directly)
+#
+#  You can check if your certificate is valid via telnet:
+#             upgradetest devicecheck
+#  This should returns a SUCCESS message.
+
 import base64
 import secrets
 import string
