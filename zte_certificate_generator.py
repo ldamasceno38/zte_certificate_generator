@@ -1,17 +1,27 @@
-# My gift to the community.
+#############################################################################################################################
 #
-# https://github.com/ldamasceno38/zte_certificate_generator
+#   > My gift to the community.
+#   > https://github.com/ldamasceno38/zte_certificate_generator
+#   > Generates Certificate ID 2561 for Fixing 10-minute-reboot after Anti_Infringement_judge function is triggered.
 #
-# Generates Certificate ID 2561 for Fixing 10-minute-reboot after Anti_Infringement_judge function is triggered.
-#
-# Anti_Infringement_judge() if the certificate (base64) after RSA decryption CONTAINS:
+#   ZTE Modems now call Anti_Infringement_judge() to check if the certificate (base64) after RSA decryption CONTAINS in a specific order:
+#  - Random Prefix (*16bytes*)
 #  - MAC 1 (setmac show id 256)
 #  - MAC 2 (setmac show id 257)
+#  - Separator ("N ")
 #  - BoardType (not setmac, this is checked via DB directly)
+#  - Random Suffix (*16bytes*)
 #
-#  You can check if your certificate is valid via telnet:
-#             upgradetest devicecheck
-#  This should returns a SUCCESS message.
+#     After Generating:
+#     setmac 1 2561 *encrypted string*
+#     reboot
+# 
+#     After Rebooting, via telnet:
+#     
+#     upgradetest devicecheck (calls Anti_Infringement_judge() function to verify if its valid.
+#     should return SUCCESS
+#
+#############################################################################################################################
 
 import base64
 import secrets
