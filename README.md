@@ -3,6 +3,8 @@
 For Fixing ZTE modem 10 minute reboot 
 A Python script that generates RSA-encrypted Certificate ID 2561 for hardware validation using MAC addresses and board types.
 
+<img width="1065" height="296" alt="Screenshot 2025-08-28 at 07 54 10" src="https://github.com/user-attachments/assets/53d581af-f14e-4910-83d6-9bb680d0725c" />
+
 ## Requirements
 
 ```bash
