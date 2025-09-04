@@ -1,490 +1,378 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZTE Certificate Generator - Anti-Infringement Fix</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZTE Tools Suite - Certificate Generator & Header Fix</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Courier New',monospace;
+      background:#0a0a0a;color:#f5f5f5;overflow-x:hidden;line-height:1.6
+    }
+    .stars{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1}
+    .star{position:absolute;width:2px;height:2px;background:#bbb;border-radius:50%;animation:twinkle 3s infinite}
+    @keyframes twinkle{0%,100%{opacity:.3}50%{opacity:1}}
+    .container{max-width:1200px;margin:0 auto;padding:2rem}
+    .header{text-align:center;margin-bottom:3rem;padding:2rem 0}
+    .logo{font-size:2.5rem;font-weight:700;margin-bottom:.5rem;text-shadow:0 0 20px #fff;animation:glow 2s ease-in-out infinite alternate}
+    @keyframes glow{from{text-shadow:0 0 20px #fff}to{text-shadow:0 0 30px #aaa,0 0 40px #fff}}
+    .tagline{font-size:1.1rem;color:#aaa;margin-bottom:2rem}
+    .main-menu{display:flex;gap:2rem;justify-content:center;margin-bottom:3rem}
+    .tool-card{
+      background:rgba(255,255,255,.05);border-radius:8px;padding:2rem;border:1px solid rgba(255,255,255,.2);
+      text-align:center;transition:.3s ease;cursor:pointer;min-width:300px
+    }
+    .tool-card:hover{background:rgba(255,255,255,.1);border-color:#fff;box-shadow:0 0 20px rgba(255,255,255,.3);transform:translateY(-5px)}
+    .tool-icon{font-size:3rem;margin-bottom:1rem;color:#fff}
+    .tool-title{font-size:1.5rem;font-weight:700;margin-bottom:1rem;color:#fff}
+    .tool-description{color:#ccc;margin-bottom:1.5rem;line-height:1.5}
+    .tool-btn{
+      padding:.8rem 2rem;background:linear-gradient(45deg,#ffd700,#ffed4e);
+      border:2px solid #ffd700;border-radius:8px;color:#000;font-family:'Courier New',monospace;font-size:1rem;font-weight:700;cursor:pointer;transition:.3s ease;text-transform:uppercase
+    }
+    .tool-btn:hover{background:linear-gradient(45deg,#ffed4e,#fff700);box-shadow:0 0 15px rgba(255,215,0,.5)}
+    .description{
+      background:rgba(255,255,255,.1);border-left:4px solid #fff;padding:1.5rem;margin-bottom:3rem;border-radius:0 8px 8px 0;backdrop-filter:blur(10px);text-align:center
+    }
 
-        body {
-            font-family: 'Courier New', monospace;
-            background: #0a0a0a;
-            color: #00ff88;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
+    /* Sections */
+    .generator-section,.header-fix-section{
+      background:rgba(255,255,255,.05);border-radius:8px;padding:2rem;border:1px solid rgba(255,255,255,.2);margin-bottom:2rem;display:none
+    }
+    .generator-section.active,.header-fix-section.active{display:block;animation:fadeIn .5s ease-in}
+    .input-group{margin-bottom:1.5rem}
+    .input-label{display:block;margin-bottom:.5rem;color:#fff;font-weight:700;font-size:1.2rem}
+    .input-field{
+      width:100%;padding:.8rem;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);border-radius:4px;color:#fff;
+      font-family:'Courier New',monospace;transition:.3s ease;font-size:1.1rem
+    }
+    .input-field:focus{outline:none;border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,.3)}
+    .input-field::placeholder{color:#666}
+    .generate-btn,.run-btn{
+      width:100%;padding:1rem;background:linear-gradient(45deg,rgba(255,255,255,.2),rgba(255,255,255,.4));border:2px solid #fff;border-radius:8px;color:#fff;
+      font-family:'Courier New',monospace;font-size:1.1rem;font-weight:700;cursor:pointer;transition:.3s ease;text-transform:uppercase
+    }
+    .generate-btn:hover,.run-btn:hover{background:linear-gradient(45deg,rgba(255,255,255,.4),rgba(255,255,255,.6));box-shadow:0 0 20px rgba(255,255,255,.5)}
+    .back-btn{
+      width:100%;padding:1rem;background:linear-gradient(45deg,#ffd700,#ffed4e);border:2px solid #ffd700;border-radius:8px;color:#000;
+      font-family:'Courier New',monospace;font-size:1.1rem;font-weight:700;cursor:pointer;transition:.3s ease;text-transform:uppercase;margin-bottom:2rem
+    }
+    .back-btn:hover{background:linear-gradient(45deg,#ffed4e,#fff700);box-shadow:0 0 20px rgba(255,215,0,.5)}
+    .result-section{background:rgba(255,255,255,.05);border-radius:8px;padding:2rem;border:1px solid rgba(255,255,255,.2);margin-bottom:2rem;display:none}
+    .result-section.show{display:block;animation:fadeIn .5s ease-in}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    .certificate-output{
+      background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);padding:1rem;border-radius:4px;margin:1rem 0;color:#32cd32;font-family:'Courier New',monospace;position:relative;font-size:1rem
+    }
+    .command,.code-block{
+      background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);padding:1rem;border-radius:4px;margin:1rem 0;color:#fff;font-family:'Courier New',monospace;position:relative
+    }
+    .copy-btn{
+      position:absolute;top:10px;right:10px;padding:.3rem .6rem;background:rgba(255,255,255,.2);border:1px solid #fff;border-radius:4px;color:#fff;
+      font-size:.8rem;cursor:pointer;transition:.3s ease
+    }
+    .copy-btn:hover{background:rgba(255,255,255,.4)}
+    .section-title{font-size:1.5rem;color:#fff;margin-bottom:1.5rem;border-left:4px solid #fff;padding-left:1rem}
+    .error{color:#fff;background:rgba(255,255,255,.1);border:1px solid #666;padding:1rem;border-radius:4px;margin:1rem 0}
+    .success{color:#fff;background:rgba(255,255,255,.1);border:1px solid #888;padding:1rem;border-radius:4px;margin:1rem 0}
 
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #00ff88;
-            border-radius: 50%;
-            animation: twinkle 3s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
-        }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 0 20px #00ff88;
-            animation: glow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes glow {
-            from { text-shadow: 0 0 20px #00ff88; }
-            to { text-shadow: 0 0 30px #00ff88, 0 0 40px #00ff88; }
-        }
-
-        .tagline {
-            font-size: 1.1rem;
-            color: #888;
-            margin-bottom: 2rem;
-        }
-
-        .description {
-            background: rgba(0, 255, 136, 0.1);
-            border-left: 4px solid #00ff88;
-            padding: 1.5rem;
-            margin-bottom: 3rem;
-            border-radius: 0 8px 8px 0;
-            backdrop-filter: blur(10px);
-        }
-
-        .generator-section {
-            background: rgba(0, 255, 136, 0.05);
-            border-radius: 8px;
-            padding: 2rem;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            margin-bottom: 2rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .input-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #00ff88;
-            font-weight: bold;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 0.8rem;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            border-radius: 4px;
-            color: #00ff88;
-            font-family: 'Courier New', monospace;
-            transition: all 0.3s ease;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: #00ff88;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
-        }
-
-        .input-field::placeholder {
-            color: #666;
-        }
-
-        .generate-btn {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(45deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.4));
-            border: 2px solid #00ff88;
-            border-radius: 8px;
-            color: #00ff88;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-
-        .generate-btn:hover {
-            background: linear-gradient(45deg, rgba(0, 255, 136, 0.4), rgba(0, 255, 136, 0.6));
-            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .generate-btn:active {
-            transform: translateY(0);
-        }
-
-        .result-section {
-            background: rgba(0, 255, 136, 0.05);
-            border-radius: 8px;
-            padding: 2rem;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            margin-bottom: 2rem;
-            display: none;
-        }
-
-        .result-section.show {
-            display: block;
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .certificate-output {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
-            color: #00ff88;
-            font-family: 'Courier New', monospace;
-            word-break: break-all;
-            position: relative;
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 0.3rem 0.6rem;
-            background: rgba(0, 255, 136, 0.2);
-            border: 1px solid #00ff88;
-            border-radius: 4px;
-            color: #00ff88;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .copy-btn:hover {
-            background: rgba(0, 255, 136, 0.4);
-        }
-
-        .instructions {
-            background: rgba(0, 255, 136, 0.05);
-            border-radius: 8px;
-            padding: 2rem;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-        }
-
-        .section-title {
-            font-size: 1.5rem;
-            color: #00ff88;
-            margin-bottom: 1.5rem;
-            border-left: 4px solid #00ff88;
-            padding-left: 1rem;
-        }
-
-        .step {
-            margin-bottom: 1rem;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 4px;
-            border-left: 3px solid #00ff88;
-        }
-
-        .step-number {
-            color: #00ff88;
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        .command {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(0, 255, 136, 0.3);
-            padding: 0.5rem;
-            border-radius: 4px;
-            margin: 0.5rem 0;
-            color: #00ff88;
-            font-family: 'Courier New', monospace;
-        }
-
-        .error {
-            color: #ff4444;
-            background: rgba(255, 68, 68, 0.1);
-            border: 1px solid rgba(255, 68, 68, 0.3);
-            padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
-        }
-
-        .success {
-            color: #44ff44;
-            background: rgba(68, 255, 68, 0.1);
-            border: 1px solid rgba(68, 255, 68, 0.3);
-            padding: 1rem;
-            border-radius: 4px;
-            margin: 1rem 0;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-            
-            .logo {
-                font-size: 1.8rem;
-            }
-        }
-    </style>
+    /* Run in Browser panel */
+    .run-panel{margin-top:1.5rem;padding:1.5rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);border-radius:8px}
+    .file-row{display:flex;gap:1rem;align-items:center;flex-wrap:wrap}
+    .file-row input[type="file"]{filter:grayscale(1);color:#fff}
+    .downloads a{
+      display:inline-block;margin-right:1rem;margin-top:.5rem;text-decoration:none;border:1px solid #fff;border-radius:6px;padding:.5rem .8rem;color:#fff
+    }
+    .downloads a:hover{background:rgba(255,255,255,.15)}
+    @media(max-width:768px){
+      .container{padding:1rem}
+      .logo{font-size:1.8rem}
+      .main-menu{flex-direction:column;align-items:center}
+      .tool-card{min-width:auto;width:100%;max-width:400px}
+    }
+  </style>
 </head>
 <body>
-    <div class="stars" id="stars"></div>
-    
-    <div class="container">
-        <header class="header">
-            <h1 class="logo">ZTE CERTIFICATE GENERATOR</h1>
-            <p class="tagline">Anti-Infringement Certificate ID 2561 Generator</p>
-        </header>
+  <div class="stars" id="stars"></div>
 
-        <div class="description">
-            <strong>ZTE Certificate Generator</strong> - Generates Certificate ID 2561 for fixing 10-minute reboot after Anti_Infringement_judge function is triggered. This tool creates a properly formatted certificate containing MAC addresses, board type, and required separators with RSA encryption.
+  <div class="container">
+    <!-- Main Menu -->
+    <div id="mainMenu">
+      <header class="header">
+        <h1 class="logo">ZTE TOOLS SUITE</h1>
+        <p class="tagline">Professional Tools for ZTE F6600P & F6645P</p>
+      </header>
+
+      <div class="description">
+        <strong>ZTE Tools Suite</strong> - Complete toolkit for ZTE modem management including Certificate Generator and Header Fix utility.<br/>
+        <strong>GitHub:</strong> <a href="https://github.com/ldamasceno38" target="_blank" style="color:#ffd700;text-decoration:none">https://github.com/ldamasceno38</a>
+      </div>
+
+      <div class="main-menu">
+        <div class="tool-card" onclick="showCertificateGenerator()">
+          <div class="tool-icon">📋</div>
+          <div class="tool-title">Certificate Generator</div>
+          <div class="tool-description">
+            Generate Certificate ID 2561 for fixing 10-minute reboot.
+          </div>
+          <button class="tool-btn">Launch Generator</button>
         </div>
 
-        <section class="generator-section">
-            <h2 class="section-title">Generate Certificate</h2>
-            
-            <div class="input-group">
-                <label class="input-label">MAC Address 1 (setmac show id 256):</label>
-                <input type="text" id="mac1" class="input-field" placeholder="48:96:D9:A2:47:01">
-            </div>
-            
-            <div class="input-group">
-                <label class="input-label">MAC Address 2 (setmac show id 257):</label>
-                <input type="text" id="mac2" class="input-field" placeholder="48:96:D9:A2:47:02">
-            </div>
-            
-            <div class="input-group">
-                <label class="input-label">Board Type:</label>
-                <input type="text" id="boardType" class="input-field" placeholder="F6600P">
-            </div>
-            
-            <button class="generate-btn" onclick="generateCertificate()">Generate Certificate</button>
-        </section>
-
-        <section class="result-section" id="resultSection">
-            <h2 class="section-title">Generated Certificate</h2>
-            <div class="certificate-output" id="certificateOutput">
-                <button class="copy-btn" onclick="copyCertificate()">Copy</button>
-                <div id="certificateText"></div>
-            </div>
-            <div id="statusMessage"></div>
-        </section>
-
-        <section class="instructions">
-            <h2 class="section-title">Installation Instructions</h2>
-            
-            <div class="step">
-                <span class="step-number">1.</span>
-                Connect to your ZTE modem via telnet and execute:
-                <div class="command">setmac 1 2561 [GENERATED_CERTIFICATE]</div>
-            </div>
-            
-            <div class="step">
-                <span class="step-number">2.</span>
-                Reboot the modem:
-                <div class="command">reboot</div>
-            </div>
-            
-            <div class="step">
-                <span class="step-number">3.</span>
-                After rebooting, verify the certificate via telnet:
-                <div class="command">upgradetest devicecheck</div>
-                Should return: <strong>SUCCESS</strong>
-            </div>
-        </section>
+        <div class="tool-card" onclick="showHeaderFix()">
+          <div class="tool-icon">🔧</div>
+          <div class="tool-title">Claro BR - ZTE Header Fix</div>
+          <div class="tool-description">
+            Fix header bytes for F6600P and F6645P
+          </div>
+          <button class="tool-btn">View Script</button>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // ZTE public key (from the Python script)
-        const ZTE_PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
+    <!-- Certificate Generator -->
+    <div id="certificateGenerator" class="generator-section">
+      <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+      <h2 class="section-title">Certificate Generator</h2>
+
+      <div class="input-group">
+        <label class="input-label">MAC Address 1 (setmac show id 256):</label>
+        <input type="text" id="mac1" class="input-field" placeholder="48:96:D9:A2:47:01">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">MAC Address 2 (setmac show id 257):</label>
+        <input type="text" id="mac2" class="input-field" placeholder="48:96:D9:A2:47:02">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Board Type:</label>
+        <input type="text" id="boardType" class="input-field" placeholder="F6600P">
+      </div>
+
+      <button class="generate-btn" onclick="generateCertificate()">Generate Certificate</button>
+
+      <div class="result-section" id="resultSection">
+        <h3 class="section-title">Generated Certificate</h3>
+        <div class="certificate-output" id="certificateOutput">
+          <button class="copy-btn" onclick="copyCertificate()">Copy</button>
+          <div id="certificateText"></div>
+        </div>
+        <div id="statusMessage"></div>
+      </div>
+    </div>
+
+    <!-- Header Fix -->
+    <div id="headerFix" class="header-fix-section">
+      <button class="back-btn" onclick="showMainMenu()">← Back to Main Menu</button>
+
+      <h2 class="section-title">ZTE Header Fix - Claro F6600P / F6645P </h2>
+
+        <!-- NEW: Run in Browser -->
+        <div class="run-panel">
+          <div class="file-row">
+            <input id="binFileInput" type="file" accept=".bin" />
+            <button class="run-btn" id="runBtn" onclick="fixHeaderInBrowser()">Fix Header & Download</button>
+          </div>
+          <div id="runStatus" style="margin-top:1rem;"></div>
+          <div class="downloads" id="downloadLinks"></div>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Shared (stars) ----
+    function createStars(){
+      const starsContainer=document.getElementById('stars');
+      const n=100;
+      for(let i=0;i<n;i++){
+        const s=document.createElement('div');
+        s.className='star';
+        s.style.left=Math.random()*100+'%';
+        s.style.top=Math.random()*100+'%';
+        s.style.animationDelay=Math.random()*3+'s';
+        s.style.animationDuration=(Math.random()*3+2)+'s';
+        starsContainer.appendChild(s);
+      }
+    }
+
+    // ---- Navigation ----
+    function showMainMenu(){
+      document.getElementById('mainMenu').style.display='block';
+      document.getElementById('certificateGenerator').classList.remove('active');
+      document.getElementById('headerFix').classList.remove('active');
+    }
+    function showCertificateGenerator(){
+      document.getElementById('mainMenu').style.display='none';
+      document.getElementById('certificateGenerator').classList.add('active');
+      document.getElementById('headerFix').classList.remove('active');
+    }
+    function showHeaderFix(){
+      document.getElementById('mainMenu').style.display='none';
+      document.getElementById('certificateGenerator').classList.remove('active');
+      document.getElementById('headerFix').classList.add('active');
+    }
+
+    // ---- Certificate Generator (unchanged logic, grayscale UI) ----
+    const ZTE_PUBLIC_KEY=`-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDO+5w8SZFD6opwK4tWOeH7f+yT
 RKy6dXvmRtUwiIjrgb/Djnl85S0/kSYgpgQpolSGjbijiyBDj41aSFGrOEz7z3wO
 K4pRByHk0+O82vf7y7qceJAIX0OocSluks4oBgnwVFyo4Qis9xwwssqC1aubsQYy
 xKNa0c/WodUSouWK0wIDAQAB
 -----END PUBLIC KEY-----`;
 
-        function generateRandomString(length) {
-            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let result = '';
-            for (let i = 0; i < length; i++) {
-                result += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return result;
+    function showError(el,msg){el.innerHTML=`<div class="error">✗ ${msg}</div>`}
+    function showSuccess(el,msg){el.innerHTML=`<div class="success">✓ ${msg}</div>`}
+
+    function generateRandomString(len){
+      const chars='abcdefghijklmnopqrstuvwxyz0123456789';
+      let r='';for(let i=0;i<len;i++) r+=chars.charAt(Math.floor(Math.random()*chars.length));
+      return r;
+    }
+    function formatMacAddress(mac){
+      const clean=mac.replace(/[:-]/g,'').toUpperCase();
+      if(clean.length!==12) throw new Error(`Invalid MAC address: ${mac} (must have 12 hex chars)`);
+      if(!/^[0-9A-F]{12}$/.test(clean)) throw new Error(`MAC contains invalid characters: ${mac}`);
+      return clean;
+    }
+    function createCertificatePayload(mac1,mac2,boardType){
+      const m1=formatMacAddress(mac1);
+      const m2=formatMacAddress(mac2);
+      const bt=boardType.toUpperCase().trim();
+      if(bt.length>20) throw new Error(`Board type too long: ${boardType} (max 20)`);
+      const prefix=generateRandomString(16);
+      const suffix=generateRandomString(16);
+      const data=m1+m2+"N "+bt;
+      return {payload:prefix+data+suffix,mac1:m1,mac2:m2,boardType:bt,prefix,suffix,dataSection:data};
+    }
+    function encryptCertificate(payload){
+      const encrypt=new JSEncrypt();encrypt.setPublicKey(ZTE_PUBLIC_KEY);
+      const out=encrypt.encrypt(payload);
+      if(!out) throw new Error('Failed to encrypt certificate');
+      return out;
+    }
+    function generateCertificate(){
+      const mac1=document.getElementById('mac1').value.trim();
+      const mac2=document.getElementById('mac2').value.trim();
+      const board=document.getElementById('boardType').value.trim();
+      const status=document.getElementById('statusMessage');
+      const resultSection=document.getElementById('resultSection');
+      const textEl=document.getElementById('certificateText');
+      status.innerHTML='';
+      if(!mac1||!mac2||!board){showError(status,'Please fill in all fields');return;}
+      try{
+        const info=createCertificatePayload(mac1,mac2,board);
+        const encrypted=encryptCertificate(info.payload);
+        textEl.textContent=encrypted;
+        showSuccess(status, 'Certificate generated successfully!');
+        status.innerHTML+=`
+          <div style="margin-top:1rem;color:#ccc;font-size:.9rem">
+            <strong>Certificate Details</strong><br/>
+            MAC 1: ${info.mac1}<br/>
+            MAC 2: ${info.mac2}<br/>
+            Board Type: ${info.boardType}<br/>
+            Payload Structure: [Random16]${info.dataSection}[Random16]
+          </div>`;
+        resultSection.classList.add('show');
+        resultSection.scrollIntoView({behavior:'smooth'});
+      }catch(e){showError(status,e.message)}
+    }
+    function copyCertificate(){
+      const t=document.getElementById('certificateText').textContent;
+      navigator.clipboard.writeText(t).then(()=>{
+        const btn=document.querySelector('#certificateOutput .copy-btn');const o=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=o,1500)
+      });
+    }
+    function copyScript(){
+      const t=document.getElementById('pythonScript').textContent;
+      navigator.clipboard.writeText(t).then(()=>{
+        const btn=document.querySelector('#headerFix .copy-btn');const o=btn.textContent;btn.textContent='Copied!';setTimeout(()=>btn.textContent=o,1500)
+      });
+    }
+
+    // ---- Run-in-browser: Header Fix on .bin ----
+    let objectUrls=[]; // keep to revoke later
+    function cleanupObjectUrls(){
+      objectUrls.forEach(u=>URL.revokeObjectURL(u));
+      objectUrls=[];
+    }
+    function readableSize(bytes){
+      if(bytes<1024) return bytes+' B';
+      if(bytes<1024*1024) return (bytes/1024).toFixed(1)+' KB';
+      return (bytes/1024/1024).toFixed(2)+' MB';
+    }
+    function fixHeaderInBrowser(){
+      const input=document.getElementById('binFileInput');
+      const status=document.getElementById('runStatus');
+      const links=document.getElementById('downloadLinks');
+      links.innerHTML='';
+      cleanupObjectUrls();
+      if(!input.files||!input.files[0]){showError(status,'Select a .bin file first');return;}
+      const file=input.files[0];
+      if(!/\.bin$/i.test(file.name)){showError(status,'File must have .bin extension');return;}
+
+      const reader=new FileReader();
+      reader.onerror=()=>showError(status,'Failed to read file');
+      reader.onload=()=>{
+        try{
+          const buf=reader.result;
+          const bytes=new Uint8Array(buf);
+
+          if(bytes.length<154){
+            showError(status,'File is too small (<154 bytes).');return;
+          }
+
+          // Create backup blob BEFORE modification
+          const backupBlob=new Blob([bytes],{type:'application/octet-stream'});
+
+          // Record original values
+          const orig40=bytes[0x40];
+          const orig99=bytes[0x99];
+
+          // Apply fixes (same as Python): 0x40 -> 0x02 ; 0x99 -> 0x06
+          bytes[0x40]=0x02;
+          bytes[0x99]=0x06;
+
+          const fixedBlob=new Blob([bytes.buffer],{type:'application/octet-stream'});
+
+          // filenames
+          const base=file.name.replace(/\.bin$/i,'');
+          const backupName=base+'_backup.bin';
+          const fixedName=base+'_fixed.bin';
+
+          // create links
+          const bu=URL.createObjectURL(backupBlob);
+          const fu=URL.createObjectURL(fixedBlob);
+          objectUrls.push(bu,fu);
+
+          links.innerHTML =
+            `<a download="${fixedName}" href="${fu}">Download</a>`;
+
+          showSuccess(status,
+            `Processed "${file.name}" (${readableSize(file.size)}). `
+          );
+        }catch(e){
+          showError(status,'Processing error: '+(e?.message||e));
         }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+    function toHex(n){return '0x'+(n>>>0).toString(16).toUpperCase().padStart(2,'0')}
 
-        function formatMacAddress(mac) {
-            const macClean = mac.replace(/[:-]/g, '').toUpperCase();
-            
-            if (macClean.length !== 12) {
-                throw new Error(`Invalid MAC address: ${mac}. Must have 12 hex characters.`);
-            }
-            
-            if (!/^[0-9A-F]{12}$/.test(macClean)) {
-                throw new Error(`MAC address contains invalid characters: ${mac}`);
-            }
-            
-            return macClean;
-        }
+    // ---- Keyboard helper ----
+    document.addEventListener('keypress',function(e){
+      if(e.key==='Enter'&&document.getElementById('certificateGenerator').classList.contains('active')){
+        generateCertificate();
+      }
+    });
 
-        function createCertificatePayload(mac1, mac2, boardType) {
-            const mac1Formatted = formatMacAddress(mac1);
-            const mac2Formatted = formatMacAddress(mac2);
-            
-            const boardTypeUpper = boardType.toUpperCase().trim();
-            if (boardTypeUpper.length > 20) {
-                throw new Error(`Board type too long: ${boardType} (maximum 20 chars)`);
-            }
-            
-            const prefix = generateRandomString(16);
-            const suffix = generateRandomString(16);
-            const separator = "N ";
-            
-            const certificateData = mac1Formatted + mac2Formatted + separator + boardTypeUpper;
-            const fullCertificate = prefix + certificateData + suffix;
-            
-            return {
-                payload: fullCertificate,
-                mac1Formatted,
-                mac2Formatted,
-                boardType: boardTypeUpper,
-                prefix,
-                suffix,
-                dataSection: certificateData
-            };
-        }
-
-        function encryptCertificate(payload) {
-            const encrypt = new JSEncrypt();
-            encrypt.setPublicKey(ZTE_PUBLIC_KEY);
-            
-            const encrypted = encrypt.encrypt(payload);
-            if (!encrypted) {
-                throw new Error('Failed to encrypt certificate');
-            }
-            
-            return encrypted;
-        }
-
-        function generateCertificate() {
-            const mac1 = document.getElementById('mac1').value.trim();
-            const mac2 = document.getElementById('mac2').value.trim();
-            const boardType = document.getElementById('boardType').value.trim();
-            
-            const statusElement = document.getElementById('statusMessage');
-            const resultSection = document.getElementById('resultSection');
-            const certificateText = document.getElementById('certificateText');
-            
-            // Clear previous results
-            statusElement.innerHTML = '';
-            
-            if (!mac1 || !mac2 || !boardType) {
-                statusElement.innerHTML = '<div class="error">Please fill in all fields</div>';
-                return;
-            }
-            
-            try {
-                // Create payload
-                const certInfo = createCertificatePayload(mac1, mac2, boardType);
-                
-                // Encrypt
-                const encryptedCert = encryptCertificate(certInfo.payload);
-                
-                // Display results
-                certificateText.textContent = encryptedCert;
-                statusElement.innerHTML = `
-                    <div class="success">✓ Certificate generated successfully!</div>
-                    <div style="margin-top: 1rem; color: #ccc; font-size: 0.9rem;">
-                        <strong>Certificate Details:</strong><br>
-                        MAC 1: ${certInfo.mac1Formatted}<br>
-                        MAC 2: ${certInfo.mac2Formatted}<br>
-                        Board Type: ${certInfo.boardType}<br>
-                        Payload Structure: [Random16]${certInfo.dataSection}[Random16]
-                    </div>
-                `;
-                
-                resultSection.classList.add('show');
-                resultSection.scrollIntoView({ behavior: 'smooth' });
-                
-            } catch (error) {
-                statusElement.innerHTML = `<div class="error">✗ Error: ${error.message}</div>`;
-            }
-        }
-
-        function copyCertificate() {
-            const certificateText = document.getElementById('certificateText').textContent;
-            navigator.clipboard.writeText(certificateText).then(() => {
-                const copyBtn = document.querySelector('.copy-btn');
-                const originalText = copyBtn.textContent;
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => {
-                    copyBtn.textContent = originalText;
-                }, 2000);
-            });
-        }
-
-        // Create stars animation
-        function createStars() {
-            const starsContainer = document.getElementById('stars');
-            const numberOfStars = 100;
-
-            for (let i = 0; i < numberOfStars; i++) {
-                const star = document.createElement('div');
-                star.className = 'star';
-                star.style.left = Math.random() * 100 + '%';
-                star.style.top = Math.random() * 100 + '%';
-                star.style.animationDelay = Math.random() * 3 + 's';
-                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                starsContainer.appendChild(star);
-            }
-        }
-
-        // Enter key support
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                generateCertificate();
-            }
-        });
-
-        // Initialize
-        createStars();
-    </script>
+    // ---- Init ----
+    createStars();
+    window.addEventListener('beforeunload',cleanupObjectUrls);
+  </script>
 </body>
 </html>
