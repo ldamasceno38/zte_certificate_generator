@@ -377,11 +377,7 @@ def main():
                     {certificate_text}
                 </div>
                 """, unsafe_allow_html=True)
-                
-                # Copy button
-                if st.button("📋 Copy Certificate"):
-                    st.code(certificate_text, language="text")
-                    st.success("Certificate copied! Use Ctrl+C to copy from the code block above.")
+        
                 
                 # Certificate details
                 st.markdown("### Certificate Details")
