@@ -130,12 +130,6 @@ st.markdown("""
         box-shadow: 0 0 15px rgba(255,215,0,0.5);
         transform: translateY(-1px);
     }
-
-    .stButton > button:active {
-        background: linear-gradient(45deg, #ffed4e, #fff700);
-        box-shadow: 0 0 15px rgba(255,215,0,0.5);
-        transform: translateY(-1px);
-    }
     
     /* Success/Error messages */
     .success-box {
@@ -247,8 +241,7 @@ def create_certificate_payload(mac1, mac2, board_type, prefix_length=16, suffix_
     # Generate random prefix and suffix
     prefix = generate_random_string(prefix_length)
     suffix = generate_random_string(suffix_length)
-    # Fix: Removed the trailing space from the separator
-    separator = "N"
+    separator = "N "
     
     certificate_data = mac1_formatted + mac2_formatted + separator + board_type
     
@@ -289,7 +282,7 @@ xKNa0c/WodUSouWK0wIDAQAB
         padding.PKCS1v15()
     )
     
-    encrypted_b64 = base64.b64encode(encrypted).decode('utf-8')
+    encrypted_b64 = base64.b64encode(encrypted).decode('utf-8').strip()
     
     return encrypted_b64
 
@@ -375,40 +368,14 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Certificate output with a unique ID for copy button
+                # Certificate output
                 st.markdown("### Generated Certificate")
+                certificate_text = result['encrypted_certificate']
                 
-                # Strip any potential leading/trailing whitespace
-                certificate_text = result['encrypted_certificate'].strip()
-                
-                # Wrap the certificate in a div with an ID
                 st.markdown(f"""
-                <div class="certificate-output" id="certificateText">
+                <div class="certificate-output">
                     {certificate_text}
                 </div>
-                """, unsafe_allow_html=True)
-                
-                # Add copy button functionality using JavaScript
-                st.markdown("""
-                <button 
-                    onclick="navigator.clipboard.writeText(document.getElementById('certificateText').innerText.trim());"
-                    style="
-                        background: linear-gradient(45deg, #ffd700, #ffed4e);
-                        border: 2px solid #ffd700;
-                        border-radius: 8px;
-                        color: #000000;
-                        font-family: 'Courier Prime', 'Courier New', monospace;
-                        font-size: 1rem;
-                        font-weight: 700;
-                        padding: 0.8rem 2rem;
-                        text-transform: uppercase;
-                        transition: all 0.3s ease;
-                        width: 100%;
-                        margin-top: 1rem;
-                    "
-                >
-                📋 Copy to Clipboard
-                </button>
                 """, unsafe_allow_html=True)
         
                 
