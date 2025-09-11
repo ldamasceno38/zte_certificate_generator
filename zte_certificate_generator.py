@@ -282,7 +282,7 @@ xKNa0c/WodUSouWK0wIDAQAB
         padding.PKCS1v15()
     )
     
-    encrypted_b64 = base64.b64encode(encrypted).decode('utf-8')
+    encrypted_b64 = base64.b64encode(encrypted).decode('utf-8').strip()
     
     return encrypted_b64
 
