@@ -13,200 +13,214 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS styling inspired by the HTML design
+# Custom CSS styling
 st.markdown("""
 <style>
-    /* Import font */
-    @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
-    
-    /* Global styles */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
     .stApp {
-        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
-        color: #f5f5f5;
-        font-family: 'Courier Prime', 'Courier New', monospace;
+        background: #0d0d0d;
+        color: #ffffff;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
-    
-    /* Hide default Streamlit elements */
+
     #MainMenu {visibility: hidden;}
     .stDeployButton {display:none;}
     footer {visibility: hidden;}
     .stAppHeader {display: none;}
-    
-    /* Main header */
-    .main-header {
-        text-align: center;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+
+    /* Loading Spinner */
+    .loading-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 0;
+        gap: 1.5rem;
     }
-    
-    .logo {
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
-        color: #ffffff;
-        text-shadow: 0 0 20px #ffffff;
-        animation: glow 2s ease-in-out infinite alternate;
+
+    .spinner-ring {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(255,255,255,0.1);
+        border-top-color: #ffffff;
+        border-radius: 50%;
+        animation: spin 1.2s ease-in-out infinite;
     }
-    
-    @keyframes glow {
-        from { text-shadow: 0 0 20px #ffffff; }
-        to { text-shadow: 0 0 30px #aaaaaa, 0 0 40px #ffffff; }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
     }
-    
-    .tagline {
-        font-size: 1.1rem;
-        color: #aaaaaa;
-        margin-bottom: 1rem;
+
+    .loading-text {
+        color: #a1a1a1;
+        font-size: 0.95rem;
+        font-weight: 400;
+        letter-spacing: 0.02em;
     }
-    
-    /* Tool cards */
-    .tool-card {
-        background: rgba(255,255,255,0.05);
+
+    /* Success State */
+    .success-ring {
+        width: 48px;
+        height: 48px;
+        border: 3px solid #22c55e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: success-pop 0.3s ease-out forwards;
+    }
+
+    @keyframes success-pop {
+        0% { transform: scale(0.8); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .checkmark {
+        width: 20px;
+        height: 20px;
+        stroke: #22c55e;
+        stroke-width: 3;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 24;
+        stroke-dashoffset: 24;
+        animation: checkmark-draw 0.3s ease-out 0.1s forwards;
+    }
+
+    @keyframes checkmark-draw {
+        to { stroke-dashoffset: 0; }
+    }
+
+    /* Certificate Card */
+    .certificate-card {
+        background: #171717;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        animation: fade-in-up 0.4s ease-out 0.2s both;
+    }
+
+    @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .certificate-output {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,255,255,0.1);
         border-radius: 8px;
-        padding: 2rem;
-        border: 1px solid rgba(255,255,255,0.2);
-        text-align: center;
+        padding: 1rem;
+        color: #22c55e;
+        font-family: 'Inter', monospace;
+        font-size: 0.85rem;
+        word-break: break-all;
         margin: 1rem 0;
-        transition: all 0.3s ease;
     }
-    
-    .tool-card:hover {
-        background: rgba(255,255,255,0.1);
-        border-color: #ffffff;
-        box-shadow: 0 0 20px rgba(255,255,255,0.3);
-        transform: translateY(-2px);
+
+    /* Info & Details boxes */
+    .info-box {
+        background: rgba(255,255,255,0.05);
+        border-left: 3px solid #ffffff;
+        padding: 1rem 1.5rem;
+        border-radius: 0 8px 8px 0;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+        color: #a1a1a1;
     }
-    
-    .tool-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
+
+    .details-box {
+        background: #171717;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 1.25rem;
+        margin: 1rem 0;
+        font-size: 0.85rem;
+        color: #a1a1a1;
+        line-height: 1.6;
     }
-    
-    .tool-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
+
+    .details-box code {
+        background: rgba(0,0,0,0.3);
+        padding: 0.15rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Inter', monospace;
         color: #ffffff;
     }
-    
-    .tool-description {
-        color: #cccccc;
-        margin-bottom: 1.5rem;
-        line-height: 1.5;
+
+    /* Section header */
+    .section-header {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 2rem 0 1rem;
+        border-left: 3px solid #ffffff;
+        padding-left: 0.75rem;
     }
-    
+
+    /* Success/Error boxes */
+    .success-box {
+        background: rgba(34, 197, 94, 0.1);
+        border: 1px solid #22c55e;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        color: #ffffff;
+        font-weight: 500;
+        margin: 1rem 0;
+    }
+
+    .error-box {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid #ef4444;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        color: #ffffff;
+        font-weight: 500;
+        margin: 1rem 0;
+    }
+
     /* Input styling */
     .stTextInput > div > div > input {
-        background: rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.3);
-        border-radius: 4px;
+        background: #171717;
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 8px;
         color: #ffffff;
-        font-family: 'Courier Prime', 'Courier New', monospace;
-        font-size: 1.1rem;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        padding: 0.6rem 0.75rem;
     }
-    
+
     .stTextInput > div > div > input:focus {
         border-color: #ffffff;
-        box-shadow: 0 0 10px rgba(255,255,255,0.3);
+        box-shadow: 0 0 0 2px rgba(255,255,255,0.1);
     }
-    
-    /* Button styling */
+
+    .stTextInput > div > div > input::placeholder {
+        color: #555555;
+    }
+
+    /* Button */
     .stButton > button {
-        background: linear-gradient(45deg, #ffd700, #ffed4e);
-        border: 2px solid #ffd700;
+        background: #ffffff;
+        color: #0d0d0d;
+        border: none;
         border-radius: 8px;
-        color: #000000;
-        font-family: 'Courier Prime', 'Courier New', monospace;
-        font-size: 1rem;
-        font-weight: 700;
-        padding: 0.8rem 2rem;
-        text-transform: uppercase;
-        transition: all 0.3s ease;
-        width: 100%;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        padding: 0.7rem 1.5rem;
+        transition: all 0.2s ease;
     }
-    
+
     .stButton > button:hover {
-        background: linear-gradient(45deg, #ffed4e, #fff700);
-        box-shadow: 0 0 15px rgba(255,215,0,0.5);
+        background: #e5e5e5;
         transform: translateY(-1px);
     }
-    
-    /* Success/Error messages */
-    .success-box {
-        background: rgba(76, 175, 80, 0.1);
-        border: 1px solid #4caf50;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
-        color: #ffffff;
-    }
-    
-    .error-box {
-        background: rgba(244, 67, 54, 0.1);
-        border: 1px solid #f44336;
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
-        color: #ffffff;
-    }
-    
-    /* Certificate output */
-    .certificate-output {
-        background: rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.3);
-        padding: 1rem;
-        border-radius: 4px;
-        margin: 1rem 0;
-        color: #32cd32;
-        font-family: 'Courier Prime', 'Courier New', monospace;
-        font-size: 0.9rem;
-        word-break: break-all;
-        position: relative;
-    }
-    
-    /* Section styling */
-    .section-header {
-        font-size: 1.5rem;
-        color: #ffffff;
-        margin-bottom: 1.5rem;
-        border-left: 4px solid #ffffff;
-        padding-left: 1rem;
-    }
-    
-    /* Info box */
-    .info-box {
-        background: rgba(255,255,255,0.1);
-        border-left: 4px solid #ffffff;
-        padding: 1.5rem;
-        margin-bottom: 2rem;
-        border-radius: 0 8px 8px 0;
-        backdrop-filter: blur(10px);
-        text-align: center;
-    }
-    
-    /* Details styling */
-    .details-box {
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.2);
-        border-radius: 8px;
-        padding: 1rem;
-        margin: 1rem 0;
-        font-size: 0.9rem;
-        color: #cccccc;
-    }
-    
-    /* Override Streamlit's default dark theme for better contrast */
-    .stSelectbox > div > div {
-        background: rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.3);
-    }
-    
-    .stTextArea > div > div > textarea {
-        background: rgba(0,0,0,0.5);
-        border: 1px solid rgba(255,255,255,0.3);
-        color: #ffffff;
-        font-family: 'Courier Prime', 'Courier New', monospace;
-    }
+
+    /* Links */
+    a { color: #ffffff; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -306,6 +320,29 @@ def generate_certificate(mac1, mac2, board_type, prefix_length=16, suffix_length
             'success': False
         }
 
+def render_loading_spinner():
+    """Render the custom minimalista loading spinner"""
+    st.markdown("""
+    <div class="loading-container">
+        <div class="spinner-ring"></div>
+        <div class="loading-text">Gerando certificado...</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+def render_success_checkmark():
+    """Render success state with checkmark animation"""
+    st.markdown("""
+    <div class="loading-container">
+        <div class="success-ring">
+            <svg class="checkmark" viewBox="0 0 24 24">
+                <polyline points="4,12 10,18 20,6"></polyline>
+            </svg>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
 # Main application
 def main():
     # Header
@@ -355,19 +392,18 @@ def main():
             </div>
             """, unsafe_allow_html=True)
         else:
-            with st.spinner("Generating certificate..."):
-                result = generate_certificate(mac1, mac2, board_type, 16, 16)
+            render_loading_spinner()
+            import time
+            time.sleep(1.5)
+            result = generate_certificate(mac1, mac2, board_type, 16, 16)
             
             if result['success']:
                 info = result['certificate_info']
-                
-                # Success message
-                st.markdown("""
-                <div class="success-box">
-                    ✅ <strong>Certificate generated successfully!</strong>
-                </div>
-                """, unsafe_allow_html=True)
-                
+
+                # Show success checkmark first
+                render_success_checkmark()
+                st.markdown('<div class="loading-container" style="padding-top:0;padding-bottom:1rem;"><div class="loading-text" style="color:#22c55e;">Certificado gerado!</div></div>', unsafe_allow_html=True)
+
                 # Certificate output
                 st.markdown("### Generated Certificate")
                 certificate_text = result['encrypted_certificate']
