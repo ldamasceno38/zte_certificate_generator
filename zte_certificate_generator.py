@@ -322,7 +322,7 @@ def generate_certificate(mac1, mac2, board_type, prefix_length=16, suffix_length
 
 def render_loading_spinner():
     """Render the custom minimalista loading spinner"""
-    st.markdown("""
+    return st.markdown("""
     <div class="loading-container">
         <div class="spinner-ring"></div>
         <div class="loading-text">Gerando certificado...</div>
@@ -330,8 +330,10 @@ def render_loading_spinner():
     """, unsafe_allow_html=True)
 
 
-def render_success_checkmark():
-    """Render success state with checkmark animation"""
+def render_success_with_certificate(result, info):
+    """Render success state with checkmark and certificate"""
+    certificate_text = result['encrypted_certificate']
+
     st.markdown("""
     <div class="loading-container">
         <div class="success-ring">
@@ -339,6 +341,40 @@ def render_success_checkmark():
                 <polyline points="4,12 10,18 20,6"></polyline>
             </svg>
         </div>
+    </div>
+    <div class="loading-container" style="padding-top:0;padding-bottom:1rem;">
+        <div class="loading-text" style="color:#22c55e;">Certificado gerado!</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### Generated Certificate")
+    st.markdown(f"""
+    <div class="certificate-output">
+        {certificate_text}
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### Certificate Details")
+    st.markdown(f"""
+    <div class="details-box">
+        <strong>MAC Address 1:</strong> {info['mac1_formatted']}<br/>
+        <strong>MAC Address 2:</strong> {info['mac2_formatted']}<br/>
+        <strong>Board Type:</strong> {info['board_type']}<br/>
+        <strong>Payload Structure:</strong> [Random16]{info['data_section']}[Random16]<br/>
+        <strong>Total Payload Length:</strong> {len(info['payload'])} characters
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.markdown("### Installation Instructions")
+    st.markdown(f"""
+    <div class="details-box">
+        <strong>1. Set the certificate:</strong><br/>
+        <code>setmac 1 2561 {certificate_text}</code><br/><br/>
+        <strong>2. Reboot the device:</strong><br/>
+        <code>reboot</code><br/><br/>
+        <strong>3. Verify installation (via telnet):</strong><br/>
+        <code>upgradetest devicecheck</code><br/>
+        <em>Should return SUCCESS</em>
     </div>
     """, unsafe_allow_html=True)
 
@@ -392,54 +428,18 @@ def main():
             </div>
             """, unsafe_allow_html=True)
         else:
-            render_loading_spinner()
+            placeholder = st.empty()
+            with placeholder:
+                render_loading_spinner()
+
             import time
             time.sleep(1.5)
             result = generate_certificate(mac1, mac2, board_type, 16, 16)
-            
+
             if result['success']:
                 info = result['certificate_info']
-
-                # Show success checkmark first
-                render_success_checkmark()
-                st.markdown('<div class="loading-container" style="padding-top:0;padding-bottom:1rem;"><div class="loading-text" style="color:#22c55e;">Certificado gerado!</div></div>', unsafe_allow_html=True)
-
-                # Certificate output
-                st.markdown("### Generated Certificate")
-                certificate_text = result['encrypted_certificate']
-                
-                st.markdown(f"""
-                <div class="certificate-output">
-                    {certificate_text}
-                </div>
-                """, unsafe_allow_html=True)
-        
-                
-                # Certificate details
-                st.markdown("### Certificate Details")
-                st.markdown(f"""
-                <div class="details-box">
-                    <strong>MAC Address 1:</strong> {info['mac1_formatted']}<br/>
-                    <strong>MAC Address 2:</strong> {info['mac2_formatted']}<br/>
-                    <strong>Board Type:</strong> {info['board_type']}<br/>
-                    <strong>Payload Structure:</strong> [Random16]{info['data_section']}[Random16]<br/>
-                    <strong>Total Payload Length:</strong> {len(info['payload'])} characters
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Installation instructions
-                st.markdown("### Installation Instructions")
-                st.markdown(f"""
-                <div class="details-box">
-                    <strong>1. Set the certificate:</strong><br/>
-                    <code>setmac 1 2561 {certificate_text}</code><br/><br/>
-                    <strong>2. Reboot the device:</strong><br/>
-                    <code>reboot</code><br/><br/>
-                    <strong>3. Verify installation (via telnet):</strong><br/>
-                    <code>upgradetest devicecheck</code><br/>
-                    <em>Should return SUCCESS</em>
-                </div>
-                """, unsafe_allow_html=True)
+                placeholder.empty()
+                render_success_with_certificate(result, info)
                 
             else:
                 st.markdown(f"""
